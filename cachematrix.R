@@ -1,15 +1,52 @@
-## Put comments here that give an overall description of what your
-## functions do
+## Two functions for caching of a matrix inverse
+## Stores the inverse to save re-calculation overhead
 
-## Write a short comment describing this function
+## makeCacheMatrix: function list to manage cached matrix object
 
-makeCacheMatrix <- function(x = matrix()) {
-
+makeCacheMatrix <- function(x = matrix()){
+    inv <- NULL # initialise the inverse to NULL
+    
+    # Define a function to set the value of the matrix
+    set <- function(m) {
+        x <<- m # updates matrix to m
+        inv <-- NULL # resets inv to NULL (since new matrix added)
+    }
+    
+    # Define a function to get the value of the matrix
+    get <- function() x
+    
+    # Define a function that assigns a value to the inverse
+    setinv <- function(minv) inv <<- minv
+    
+    # Define a function to return the inverse
+    getinv <- function() inv
+    
+    # Return a list of the above functions
+    list(set=set,get=get,setinv=setinv,getinv=getinv)
 }
 
 
-## Write a short comment describing this function
+## cacheSolve: calculates the matrix inverse if required, and caches it.
+## Otherwise, returns the cached matrix
 
-cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+cacheSolve <- function(x, ...){
+    # check if the inverse is currently defined
+    inv <- x$getinv()
+    if(!is.null(inv)){ # inverse already cached, so return
+        message("Returning cached inverse")
+        return(inv)
+    }
+    # We reach this point only if the inverse has not been cached (to Null)
+    # So we now calculate the inverse and cache it
+    X <- x$get() # get the value of the matrix to invert
+    inv <- solve(X,...) # calculate the inverse
+    x$setinv(inv) # cache the inverse
+    inv # return the inverse
+}
+
+## testmatrix: Uses 2d rotation matrices to test whether the above functions work
+
+testmatrix <- function(theta){
+    matrix(data=c(cos(theta),sin(theta),-sin(theta),+
+                      cos(theta)),nrow=2,ncol=2,byrow=TRUE)
 }
